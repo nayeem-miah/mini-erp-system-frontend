@@ -62,3 +62,47 @@ export interface ProductModalProps {
   mode: "add" | "edit";
   imagePreview?: string | null;
 }
+
+export interface SaleItem {
+  productId: string;
+  quantity: number;
+  price: number;
+  productName: string;
+  productSku: string;
+  productImage: string;
+}
+
+export interface Sale {
+  id: string;
+  items: SaleItem[];
+  grandTotal: number;
+  saleDate: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+export interface ProductSearchFiltersProps {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  categoryId: string;
+  setCategoryId: (id: string) => void;
+  categories: Category[];
+}
+
+export interface SalesTableProps {
+  sales: Sale[];
+  isLoading: boolean;
+  isError: boolean;
+}
+
+export interface ProductCardProps {
+  product: Product;
+  inCartQty: number;
+  onAddToCart: (product: Product) => void;
+}
