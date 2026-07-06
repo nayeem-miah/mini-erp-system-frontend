@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ProductModalProps } from "@/types";
+import CategorySelect from "./CategorySelect";
 
 export default function ProductModal({
   isOpen,
@@ -59,21 +60,15 @@ export default function ProductModal({
 
             <div className="col-span-2 space-y-1.5">
               <label htmlFor="categoryId" className="text-sm font-medium">Category</label>
-              <select
-                id="categoryId"
-                name="categoryId"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
+              <CategorySelect
+                categories={categories}
                 value={formData.categoryId}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select a category</option>
-                {categories.map((cat: any) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(selectedId) =>
+                  handleInputChange({
+                    target: { name: "categoryId", value: selectedId },
+                  } as any)
+                }
+              />
             </div>
 
             <div className="space-y-1.5">

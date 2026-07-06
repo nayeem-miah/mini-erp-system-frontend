@@ -4,6 +4,7 @@
 import ProductModal from "@/components/products/ProductModal";
 import ProductTable from "@/components/products/ProductTable";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import CustomSelect from "@/components/ui/CustomSelect";
 import { useAuth } from "@/context/AuthContext";
 import { useGetCategoriesQuery } from "@/redux/api/categoriesApi";
 import {
@@ -226,21 +227,19 @@ export default function ProductsPage() {
           />
         </div>
         <div className="w-full sm:w-48">
-          <select
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
+          <CustomSelect
+            options={[
+              { value: "", label: "All Categories" },
+              ...categories.map((cat: any) => ({ value: cat.id, label: cat.name })),
+            ]}
             value={categoryId}
-            onChange={(e) => {
-              setCategoryId(e.target.value);
+            onChange={(selectedId) => {
+              setCategoryId(selectedId);
               setPage(1);
             }}
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat: any) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+            placeholder="All Categories"
+            triggerClassName="rounded-md"
+          />
         </div>
       </section>
 

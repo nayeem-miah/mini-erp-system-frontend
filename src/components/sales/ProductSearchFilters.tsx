@@ -1,6 +1,7 @@
 "use client";
 
 import { ProductSearchFiltersProps } from "@/types";
+import CustomSelect from "../ui/CustomSelect";
 
 export default function ProductSearchFilters({
   searchTerm,
@@ -9,6 +10,11 @@ export default function ProductSearchFilters({
   setCategoryId,
   categories,
 }: ProductSearchFiltersProps) {
+  const options = [
+    { value: "", label: "All Categories" },
+    ...categories.map((cat) => ({ value: cat.id, label: cat.name })),
+  ];
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="relative flex-1">
@@ -36,18 +42,13 @@ export default function ProductSearchFilters({
         />
       </div>
 
-      <select
+      <CustomSelect
+        options={options}
         value={categoryId}
-        onChange={(e) => setCategoryId(e.target.value)}
-        className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-[200px]"
-      >
-        <option value="">All Categories</option>
-        {categories.map((category) => (
-          <option key={category.id} value={category.id}>
-            {category.name}
-          </option>
-        ))}
-      </select>
+        onChange={setCategoryId}
+        placeholder="All Categories"
+        className="sm:w-[200px]"
+      />
     </div>
   );
 }

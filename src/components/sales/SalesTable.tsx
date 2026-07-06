@@ -3,6 +3,7 @@
 import Loader from "@/components/ui/Loader";
 import { SalesTableProps } from "@/types";
 import React, { useState } from "react";
+import CustomSelect from "../ui/CustomSelect";
 
 export default function SalesTable({ sales, isLoading, isError }: SalesTableProps) {
   const [expandedSaleId, setExpandedSaleId] = useState<string | null>(null);
@@ -131,16 +132,18 @@ export default function SalesTable({ sales, isLoading, isError }: SalesTableProp
           />
         </div>
 
-        <select
+        <CustomSelect
+          options={[
+            { value: "all", label: "All Dates" },
+            { value: "today", label: "Today" },
+            { value: "week", label: "Last 7 Days" },
+            { value: "month", label: "Last 30 Days" },
+          ]}
           value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-          className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-[200px]"
-        >
-          <option value="all">All Dates</option>
-          <option value="today">Today</option>
-          <option value="week">Last 7 Days</option>
-          <option value="month">Last 30 Days</option>
-        </select>
+          onChange={setDateFilter}
+          placeholder="All Dates"
+          className="sm:w-[200px]"
+        />
       </div>
 
       {/* Main Table */}
