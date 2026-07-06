@@ -2,7 +2,7 @@
 
 SPTC (Smart Project & Task Collaboration) is a premium, high-fidelity project management and task assignment dashboard built using **Next.js 16 (App Router)** and **Redux Toolkit Query (RTK Query)**. It connects to a live backend service to offer real-time synchronization, team management, and granular permission controls.
 
-- **Live Frontend**: [https://sptc-frontend.vercel.app](https://sptc-frontend.vercel.app)
+- **Live Frontend**: [https://mini-erp-system-frontend.vercel.app](https://mini-erp-system-frontend.vercel.app)
 - **Live Backend API**: `https://sptc-system-backend.vercel.app/api/v1`
 
 ---
