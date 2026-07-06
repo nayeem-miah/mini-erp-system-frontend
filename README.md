@@ -1,36 +1,37 @@
-# SPTC - Smart Project & Task Collaboration Dashboard
+# Mini ERP - Inventory Management & POS Dashboard
 
-SPTC (Smart Project & Task Collaboration) is a premium, high-fidelity project management and task assignment dashboard built using **Next.js 16 (App Router)** and **Redux Toolkit Query (RTK Query)**. It connects to a live backend service to offer real-time synchronization, team management, and granular permission controls.
+Mini ERP is a premium, high-fidelity inventory catalog and client-side Point of Sale (POS) checkout terminal dashboard built using **Next.js 16 (App Router)**, **React 19**, and **Redux Toolkit Query (RTK Query)**. It connects to a live backend service to offer real-time synchronization, item catalogs, categories management, and role-based permissions.
 
 - **Live Frontend**: [https://mini-erp-system-frontend.vercel.app](https://mini-erp-system-frontend.vercel.app)
-- **Live Backend API**: `https://sptc-system-backend.vercel.app/api/v1`
+- **Live Backend API**: `https://mini-erp-system-backend.vercel.app/api/v1`
 
 ---
 
 ## 🎨 Design System & Aesthetics
 
-SPTC is designed with a premium, state-of-the-art visual style featuring:
-- **Harmonious Dark Theme**: Sleek dark backgrounds with customized monochrome/gray layouts.
+Mini ERP is designed with a premium, state-of-the-art visual style featuring:
+- **Responsive Layout**: Adapts seamlessly to all screen sizes, including a collapsible mobile navigation drawer.
 - **Glassmorphism & Micro-animations**: Soft shadows, responsive layouts, hover state highlights, and smooth state transitions.
-- **Visual Status Tags**: Custom indicators representing Task Priorities (`High`, `Medium`, `Low`) and Statuses (`Todo`, `In Progress`, `Completed`).
-- **Interactive Custom Modals**: Clean confirmation overlays for critical actions like deletion and user removal instead of generic browser prompt alerts.
+- **Visual Status Badges**: Custom indicators representing product inventory stock alerts (e.g. `Low Stock`, `Out of Stock`, `In Stock`).
+- **Standardized Dropdowns**: Reusable search-enabled `<CustomSelect>` component replacing standard browser selects to provide custom scrolling boundaries and clean checkmark states.
+- **Unified Error Panels**: Extracted alert banners to a reusable `<ErrorBanner>` component to present clean, user-friendly warnings for network or validation failures.
 
 ---
 
 ## 🔑 Role-Based Access Control (RBAC)
 
-The dashboard enforces three clear scopes of permissions:
-1. **Admin**:
-   - Full management of projects (Create, Edit, Delete).
-   - Full management of tasks (Create, Edit, Delete, Reassign).
-   - Complete access to the **User Management Panel** (`/users`) to change system roles (Admin, Project Manager, Team Member) and delete user accounts.
-2. **Project Manager**:
-   - Create and edit projects.
-   - Manage team membership within projects (Add/Remove members on details page).
-   - Create, edit, and delete project tasks, and reassign them to team members.
-3. **Team Member**:
-   - View assigned projects and task boards.
-   - Quick-toggle task progress (Todo, In Progress, Completed) for tasks assigned to them.
+The dashboard enforces permissions based on three user roles:
+1. **ADMIN**:
+   - Complete control over the catalog.
+   - Full management of products and categories (Create, Edit, Delete).
+   - Complete access to overall Sales History statistics and receipts.
+2. **MANAGER**:
+   - Full management of products and categories (Create, Edit, Delete).
+   - Access to view overall Sales History statistics and receipts.
+3. **EMPLOYEE**:
+   - Restricted catalog management. Can view products and categories.
+   - Full access to the POS Terminal to run transactions.
+   - Restricted access to Sales History (can only view their own personal checkout receipts).
 
 ---
 
@@ -39,47 +40,58 @@ The dashboard enforces three clear scopes of permissions:
 ```
 src/
 ├── app/                      # Next.js App Router (16.x)
-│   ├── (dashboard)/          # Dashboard Route Groups
-│   │   ├── page.tsx          # Home Overview (dynamic metrics & workload charts)
-│   │   ├── projects/         # Projects directory & details views
-│   │   ├── tasks/            # Global tasks listing table
-│   │   ├── users/            # Admin User Management table
-│   │   └── activity-log/     # System events activity stream log
-│   │   login/                # User login page
-│   │   register/             # User registration page
-│   └── globals.css           # Global custom stylesheet & dark mode variables
-├── components/               # Resilient, shared component hierarchy
-│   ├── DashboardLayout.tsx   # Sidebar navigation and view shell
-│   ├── ProjectTable.tsx      # Clickable project list table
-│   ├── CreateProjectModal.tsx# Date-safe project creator modal
-│   └── CreateTaskModal.tsx   # Dynamic task creation and assignment modal
+│   ├── (auth)/               # Authentication Route Groups
+│   │   ├── login/            # User login page
+│   │   └── register/         # User registration page
+│   ├── (dashboard)/          # Authenticated Dashboard Layout
+│   │   ├── page.tsx          # Analytics overview (low stock action items list)
+│   │   ├── products/         # Products catalog table with category search
+│   │   ├── categories/       # Category directory list & add categories form
+│   │   └── sales/            # POS checkout terminal & sales history tab views
+│   └── globals.css           # Global custom stylesheet & theme variables
+├── components/               # Shared components
+│   ├── DashboardLayout.tsx   # Responsive sidebar layout shell
+│   ├── products/             # Products components
+│   │   ├── ProductTable.tsx  # Product listing table
+│   │   ├── ProductModal.tsx  # Product add/edit form modal
+│   │   └── CategorySelect.tsx# Custom category dropdown search selector
+│   ├── sales/                # POS terminal & history components
+│   │   ├── ProductCard.tsx   # Individual POS item card
+│   │   ├── ProductGrid.tsx   # Catalog grid view with checkout integration
+│   │   ├── ProductSearchFilters.tsx # POS category/search filters
+│   │   ├── CartPanel.tsx     # Checkout shopping cart panel
+│   │   └── SalesTable.tsx    # Expandable receipt table with date parameters
+│   └── ui/                   # Shared UI components
+│       ├── CustomSelect.tsx  # Reusable select dropdown with overflow safety
+│       ├── ErrorBanner.tsx   # Reusable warning alert banner
+│       └── Loader.tsx        # Dynamic spinner loader
 ├── context/                  # Authentication context provider
 │   └── AuthContext.tsx       # Auth status, user credentials, and users list caching
 ├── redux/                    # Redux Toolkit global state store
 │   ├── api/                  # RTK Query API endpoints
 │   │   ├── baseApi.ts        # API configuration with JWT Bearer Token injector
-│   │   ├── authApi.ts        # Authentication & users database mutations
-│   │   ├── projectApi.ts     # Project queries & member assignment mutations
-│   │   └── taskApi.ts        # Task queries & CRUD mutations with converters
-│   └── slices/               # Local auth credentials slice
-└── utils/                    # Loggers & static helper functions
+│   │   ├── authApi.ts        # Authentication queries
+│   │   ├── productsApi.ts    # Products catalog queries & mutations
+│   │   ├── categoriesApi.ts  # Categories listing queries & mutations
+│   │   └── salesApi.ts       # Sales, checkout, and history query parameters
+│   └── store.ts              # Redux RTK store configurations
+└── types/                    # Common TypeScript type interfaces
 ```
 
 ---
 
 ## ⚡ Key Technical Features
 
-### 1. RTK Query Sync & Cache Invalidation
-The application uses a centralized API slice (`baseApi.ts`) that manages tag invalidations (`User`, `Project`, `Task`, `Activity`) for live updates. Mutating a task or adding a project member automatically triggers a refetch of related queries.
+### 1. Backend-Driven Search, Filtering, and Pagination
+Sales history and product catalogs are paginated, searched, and filtered on the server side using the database to maintain performance when loading hundreds of receipts.
+* Category listing filters can be quickly queried from the backend parameters.
+* Filters automatically reset page indexes to keep lists synced.
 
-### 2. Bidirectional Enum Mappers
-Automatic converters bridge differences between backend database enums (`TODO`, `IN_PROGRESS`, `COMPLETED` / `HIGH`, `MEDIUM`, `LOW`) and frontend display states (`Todo`, `In Progress`, `Completed` / `High`, `Medium`, `Low`).
+### 2. Auto-Refetch Tag Invalidation
+RTK Query cache invalidation tags (`"Product"`, `"Sale"`) ensure that running a checkout in the POS cart immediately updates the available product stock quantities and updates the dashboard metrics without requiring full page refreshes.
 
-### 3. Date Overflow Protection
-Form inputs validate date deadlines to ensure no year beyond `2100` is submitted, preventing MongoDB/Prisma database datetime overflow crashes.
-
-### 4. Interactive Row Actions
-Directory tables (projects and tasks) feature fully clickable rows for quick navigation, with child action buttons equipped with `event.stopPropagation()` to prevent nested event triggers.
+### 3. Stat Aggregations at the Database Layer
+Statistical details (Total Revenue, Average Order Value, Transactions Count) for filtered sales are calculated inside the backend database using Prisma and returned within the response `meta` envelopes.
 
 ---
 
@@ -88,7 +100,7 @@ Directory tables (projects and tasks) feature fully clickable rows for quick nav
 Create a `.env.local` file in the root directory to customize the backend endpoint:
 
 ```env
-NEXT_PUBLIC_BASE_API=https://sptc-system-backend.vercel.app/api/v1
+NEXT_PUBLIC_BASE_API=https://mini-erp-system-backend.vercel.app/api/v1
 ```
 
 ---
