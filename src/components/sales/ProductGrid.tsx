@@ -17,6 +17,10 @@ interface ProductGridProps {
   setCategoryId: (id: string) => void;
   onAddToCart: (product: Product) => void;
   cartQuantities: Record<string, number>;
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
 }
 
 export default function ProductGrid({
@@ -30,6 +34,10 @@ export default function ProductGrid({
   setCategoryId,
   onAddToCart,
   cartQuantities,
+  page,
+  totalPages,
+  totalItems,
+  onPageChange,
 }: ProductGridProps) {
   return (
     <div className="flex flex-col gap-6 h-full">
@@ -68,15 +76,42 @@ export default function ProductGrid({
             <p className="text-sm mt-1">Try resetting your filters or search keywords.</p>
           </div>
         ) : (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                inCartQty={cartQuantities[product.id] || 0}
-                onAddToCart={onAddToCart}
-              />
-            ))}
+          <div className="flex flex-col gap-4">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  inCartQty={cartQuantities[product.id] || 0}
+                  onAddToCart={onAddToCart}
+                />
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t pt-4 mt-2">
+                <span className="text-xs text-muted-foreground">
+                  Page {page} of {totalPages} ({totalItems} items)
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onPageChange(Math.max(page - 1, 1))}
+                    disabled={page === 1}
+                    className="inline-flex h-8 items-center justify-center rounded-md border bg-background px-3 text-xs font-semibold disabled:opacity-40 transition-all hover:bg-accent"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => onPageChange(Math.min(page + 1, totalPages))}
+                    disabled={page === totalPages}
+                    className="inline-flex h-8 items-center justify-center rounded-md border bg-background px-3 text-xs font-semibold disabled:opacity-40 transition-all hover:bg-accent"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

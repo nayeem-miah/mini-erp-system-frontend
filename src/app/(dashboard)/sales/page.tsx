@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -9,8 +10,6 @@ import { useGetCategoriesQuery } from "@/redux/api/categoriesApi";
 import { useGetProductsQuery } from "@/redux/api/productsApi";
 import {
   useCreateSaleMutation,
-  useGetMySalesQuery,
-  useGetSalesQuery,
 } from "@/redux/api/salesApi";
 import { Product } from "@/types";
 import { useEffect, useState } from "react";
@@ -27,7 +26,8 @@ export default function SalesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [categoryId, setCategoryId] = useState("");
-
+  const [productPage, setProductPage] = useState(1);
+  const productLimit = 6;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -35,6 +35,11 @@ export default function SalesPage() {
     }, 400);
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  // Reset page when search or category changes
+  useEffect(() => {
+    setProductPage(1);
+  }, [debouncedSearch, categoryId]);
 
   const { data: categoriesResponse } = useGetCategoriesQuery(undefined);
   const categories = categoriesResponse?.data || [];
@@ -44,38 +49,16 @@ export default function SalesPage() {
     isLoading: isProductsLoading,
     isError: isProductsError,
   } = useGetProductsQuery({
-    page: 1,
-    limit: 100,
+    page: productPage,
+    limit: productLimit,
     searchTerm: debouncedSearch,
     categoryId: categoryId || undefined,
   });
   const products = productsResponse?.data?.data || [];
+  const productMeta = productsResponse?.data?.meta || { page: 1, limit: 6, total: 0, totalPages: 1 };
 
 
   const isManagerOrAdmin = user?.role === "ADMIN" || user?.role === "MANAGER";
-
-  const {
-    data: allSalesResponse,
-    isLoading: isAllSalesLoading,
-    isError: isAllSalesError,
-  } = useGetSalesQuery(undefined, {
-    skip: !isManagerOrAdmin || activeTab !== "history",
-  });
-
-  const {
-    data: mySalesResponse,
-    isLoading: isMySalesLoading,
-    isError: isMySalesError,
-  } = useGetMySalesQuery(undefined, {
-    skip: isManagerOrAdmin || activeTab !== "history",
-  });
-
-  const salesData = isManagerOrAdmin
-    ? allSalesResponse?.data || []
-    : mySalesResponse?.data || [];
-
-  const isSalesLoading = isManagerOrAdmin ? isAllSalesLoading : isMySalesLoading;
-  const isSalesError = isManagerOrAdmin ? isAllSalesError : isMySalesError;
 
 
   const [createSale, { isLoading: isCheckingOut }] = useCreateSaleMutation();
@@ -243,6 +226,10 @@ export default function SalesPage() {
                 setCategoryId={setCategoryId}
                 onAddToCart={handleAddToCart}
                 cartQuantities={cartQuantities}
+                page={productPage}
+                totalPages={productMeta.totalPages}
+                totalItems={productMeta.total}
+                onPageChange={setProductPage}
               />
             </div>
 
@@ -260,11 +247,7 @@ export default function SalesPage() {
         ) : (
           /* Sales History List (spans full width) */
           <div className="w-full">
-            <SalesTable
-              sales={salesData}
-              isLoading={isSalesLoading}
-              isError={isSalesError}
-            />
+            <SalesTable />
           </div>
         )}
       </div>

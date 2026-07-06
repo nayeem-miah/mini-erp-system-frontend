@@ -1,57 +1,83 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import Loader from "@/components/ui/Loader";
-import { SalesTableProps } from "@/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomSelect from "../ui/CustomSelect";
+import { Sale } from "@/types";
+import { useAuth } from "@/context/AuthContext";
+import { useGetSalesQuery, useGetMySalesQuery } from "@/redux/api/salesApi";
 
-export default function SalesTable({ sales, isLoading, isError }: SalesTableProps) {
+export default function SalesTable() {
   const [expandedSaleId, setExpandedSaleId] = useState<string | null>(null);
-
-
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const limit = 6;
+
+  const { user } = useAuth();
+  const isManagerOrAdmin = user?.role === "ADMIN" || user?.role === "MANAGER";
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, dateFilter]);
+
+  const {
+    data: allSalesResponse,
+    isLoading: isAllSalesLoading,
+    isError: isAllSalesError,
+  } = useGetSalesQuery(
+    {
+      page,
+      limit,
+      searchTerm: debouncedSearch || undefined,
+      dateFilter: dateFilter || undefined,
+    },
+    {
+      skip: !isManagerOrAdmin,
+    }
+  );
+
+  const {
+    data: mySalesResponse,
+    isLoading: isMySalesLoading,
+    isError: isMySalesError,
+  } = useGetMySalesQuery(
+    {
+      page,
+      limit,
+      searchTerm: debouncedSearch || undefined,
+      dateFilter: dateFilter || undefined,
+    },
+    {
+      skip: isManagerOrAdmin,
+    }
+  );
+
+  const salesResponse = isManagerOrAdmin ? allSalesResponse : mySalesResponse;
+  const salesData = salesResponse?.data?.data || [];
+  const meta = salesResponse?.data?.meta || { page: 1, limit: 6, total: 0, totalPages: 1 };
+  const isLoading = isManagerOrAdmin ? isAllSalesLoading : isMySalesLoading;
+  const isError = isManagerOrAdmin ? isAllSalesError : isMySalesError;
+
+  const totalRevenue = meta.totalRevenue || 0;
+  const totalTransactions = meta.total || 0;
+  const avgOrderValue = meta.avgOrderValue || 0;
+  const totalPages = meta.totalPages || 1;
 
   const toggleRow = (saleId: string) => {
     setExpandedSaleId((prev) => (prev === saleId ? null : saleId));
   };
-
-
-  const isDateInRange = (dateStr: string, range: string) => {
-    const saleDate = new Date(dateStr);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (range === "today") {
-      return saleDate >= today;
-    } else if (range === "week") {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(today.getDate() - 7);
-      return saleDate >= oneWeekAgo;
-    } else if (range === "month") {
-      const oneMonthAgo = new Date();
-      oneMonthAgo.setMonth(today.getMonth() - 1);
-      return saleDate >= oneMonthAgo;
-    }
-    return true;
-  };
-
-
-  const filteredSales = sales.filter((sale) => {
-    const matchesSearch =
-      sale.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.user.email.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesDate = isDateInRange(sale.saleDate, dateFilter);
-
-    return matchesSearch && matchesDate;
-  });
-
-
-  const totalRevenue = filteredSales.reduce((acc, sale) => acc + sale.grandTotal, 0);
-  const totalTransactions = filteredSales.length;
-  const avgOrderValue = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
 
   if (isLoading) {
     return <Loader minHeight="min-h-[300px]" />;
@@ -147,7 +173,7 @@ export default function SalesTable({ sales, isLoading, isError }: SalesTableProp
       </div>
 
       {/* Main Table */}
-      {filteredSales.length === 0 ? (
+      {salesData.length === 0 ? (
         <div className="flex min-h-[250px] flex-col items-center justify-center rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
           <svg
             className="mb-4 h-12 w-12 opacity-30"
@@ -179,7 +205,7 @@ export default function SalesTable({ sales, isLoading, isError }: SalesTableProp
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/50">
-                {filteredSales.map((sale) => {
+                {salesData.map((sale: Sale) => {
                   const isExpanded = expandedSaleId === sale.id;
                   const totalItems = sale.items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -327,6 +353,31 @@ export default function SalesTable({ sales, isLoading, isError }: SalesTableProp
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between border-t px-6 py-4">
+              <span className="text-xs text-muted-foreground">
+                Page {page} of {totalPages} ({totalTransactions} total items)
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setPage(Math.max(page - 1, 1))}
+                  disabled={page === 1}
+                  className="inline-flex h-8 items-center justify-center rounded-md border bg-background px-3 text-xs font-semibold disabled:opacity-40 transition-all hover:bg-accent"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setPage(Math.min(page + 1, totalPages))}
+                  disabled={page === totalPages}
+                  className="inline-flex h-8 items-center justify-center rounded-md border bg-background px-3 text-xs font-semibold disabled:opacity-40 transition-all hover:bg-accent"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

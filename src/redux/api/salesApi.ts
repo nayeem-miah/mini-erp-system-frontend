@@ -5,16 +5,18 @@ import { baseApi } from "./baseApi";
 export const salesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getSales: builder.query({
-      query: () => ({
+      query: (params?: { page?: number; limit?: number; searchTerm?: string; dateFilter?: string }) => ({
         url: "/sales",
         method: "GET",
+        params,
       }),
       providesTags: ["Sale"],
     }),
     getMySales: builder.query({
-      query: () => ({
+      query: (params?: { page?: number; limit?: number; searchTerm?: string; dateFilter?: string }) => ({
         url: "/sales/my-sales",
         method: "GET",
+        params,
       }),
       providesTags: ["Sale"],
     }),
