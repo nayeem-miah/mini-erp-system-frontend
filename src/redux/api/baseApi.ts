@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const BASE_API = process.env.NEXT_PUBLIC_BASE_API || "https://sptc-system-backend.vercel.app/api/v1";
+const BASE_API = process.env.NEXT_PUBLIC_BASE_API || "https://mini-erp-system-backend.vercel.app/api/v1";
 
 export const baseApi = createApi({
   reducerPath: "api",
@@ -18,6 +19,6 @@ export const baseApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["User", "Product", "Sale"],
+  tagTypes: ["User", "Product", "Sale", "Category"],
   endpoints: () => ({}),
 });

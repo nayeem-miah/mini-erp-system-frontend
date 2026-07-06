@@ -2,7 +2,7 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type UserRole = "Admin" | "Project Manager" | "Team Member";
+export type UserRole = "ADMIN" | "MANAGER" | "EMPLOYEE";
 
 export interface User {
   id: string;
@@ -18,16 +18,12 @@ interface AuthState {
 
 // Helper to map backend uppercase roles to frontend Title Case roles
 export const mapBackendRoleToFrontend = (role: string): UserRole => {
-  if (role === "ADMIN") return "Admin";
-  if (role === "MANAGER") return "Project Manager";
-  return "Team Member";
+  return role as UserRole;
 };
 
 // Helper to map frontend Title Case roles to backend uppercase roles
 export const mapFrontendRoleToBackend = (role: UserRole): string => {
-  if (role === "Admin") return "ADMIN";
-  if (role === "Project Manager") return "MANAGER";
-  return "EMPLOYEE";
+  return role;
 };
 
 // Initial state, trying to load from localStorage if in browser environment

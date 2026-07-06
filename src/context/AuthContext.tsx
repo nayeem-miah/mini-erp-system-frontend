@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // RTK Query hook retrieves user list and automatically invalidates/refetches
   const { data: usersResponse } = useGetAllUsersQuery(undefined, {
-    skip: !token || (user?.role !== "Admin" && user?.role !== "Project Manager"),
+    skip: !token || (user?.role !== "ADMIN" && user?.role !== "MANAGER"),
   });
 
   useEffect(() => {
@@ -119,8 +119,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const demoLogin = async (role: UserRole) => {
     let email = "employee@gmail.com";
-    if (role === "Admin") email = "admin@gmail.com";
-    else if (role === "Project Manager") email = "manager@gmail.com";
+    if (role === "ADMIN") email = "admin@gmail.com";
+    else if (role === "MANAGER") email = "manager@gmail.com";
 
     return await login(email, "123456");
   };

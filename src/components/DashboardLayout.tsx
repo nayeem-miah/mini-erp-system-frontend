@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+import Loader from "@/components/ui/Loader";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -23,11 +24,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [loading, isAuthenticated, router]);
 
   if (loading || !isAuthenticated || !user) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-      </div>
-    );
+    return <Loader minHeight="h-screen" className="bg-background" size="lg" />;
   }
 
   const avatarLetter = user.name ? user.name.charAt(0).toUpperCase() : "U";
@@ -90,6 +87,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform group-hover:scale-110"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
                   <span>Products</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/categories"
+                  className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                    isActive("/categories")
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform group-hover:scale-110"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                  <span>Categories</span>
                 </Link>
               </li>
               <li>
