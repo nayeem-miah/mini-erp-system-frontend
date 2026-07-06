@@ -1,6 +1,5 @@
 "use client";
 
-import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -121,10 +120,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Footer Area with Profile & Logout */}
         <div className="mt-auto flex flex-col gap-4 border-t pt-6">
-          <div className="flex items-center justify-between px-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Theme</span>
-            <ThemeToggle />
-          </div>
 
           <div className="flex items-center gap-3 rounded-xl border bg-background/50 p-3 shadow-sm backdrop-blur transition-colors hover:bg-accent/50">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary ring-1 ring-primary/20">

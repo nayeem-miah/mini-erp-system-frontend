@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import Loader from "@/components/ui/Loader";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import ErrorBanner from "@/components/ui/ErrorBanner";
 
 export default function CategoriesPage() {
   const { user } = useAuth();
@@ -91,6 +92,9 @@ export default function CategoriesPage() {
 
   return (
     <div className="flex flex-col gap-8">
+      {isError && (
+        <ErrorBanner message="Failed to load categories. Please check your backend connection." />
+      )}
       {/* Page Header */}
       <section className="flex flex-col gap-2 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background p-8 shadow-sm border border-primary/10">
         <h2 className="text-3xl font-bold tracking-tight">Category Management</h2>

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import ThemeToggle from "@/components/ThemeToggle";
+import ErrorBanner from "@/components/ui/ErrorBanner";
 import { useAuth, UserRole } from "@/context/AuthContext";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -48,7 +48,7 @@ export default function LoginPage() {
       } else {
         toast.success("Login successful!");
       }
-    } catch (err) {
+    } catch {
       setGeneralError("An unexpected error occurred. Please try again.");
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
@@ -67,7 +67,7 @@ export default function LoginPage() {
       } else {
         toast.success(`Demo login successful as ${role}!`);
       }
-    } catch (err) {
+    } catch {
       setGeneralError("An unexpected error occurred.");
       toast.error("An unexpected error occurred.");
     } finally {
@@ -77,10 +77,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-background to-secondary relative p-4">
-      {/* Floating Theme Toggle in top-right */}
-      <div className="absolute top-6 right-6 z-50">
-        <ThemeToggle />
-      </div>
 
       <div className="w-full max-w-md bg-card border border-border shadow-2xl rounded-2xl p-8 relative overflow-hidden backdrop-blur-sm">
         {/* Decorative background element */}
@@ -93,14 +89,7 @@ export default function LoginPage() {
         </div>
 
         {generalError && (
-          <div className="mb-6 p-4 rounded-lg bg-destructive/15 border border-destructive/30 flex items-start gap-3 text-destructive relative z-10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" x2="12" y1="8" y2="12" />
-              <line x1="12" x2="12.01" y1="16" y2="16" />
-            </svg>
-            <span className="text-sm font-medium">{generalError}</span>
-          </div>
+          <ErrorBanner message={generalError} className="mb-6 relative z-10" />
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
