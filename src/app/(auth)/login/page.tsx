@@ -165,7 +165,7 @@ export default function LoginPage() {
             onClick={() => handleDemoLogin("ADMIN")}
           >
             <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Admin</span>
-            <span className="text-[10px] text-muted-foreground mt-1 hidden sm:block">Full system</span>
+            <span className="text-[10px] text-muted-foreground mt-1 hidden sm:block">Full control</span>
           </button>
 
           <button
@@ -173,15 +173,15 @@ export default function LoginPage() {
             onClick={() => handleDemoLogin("MANAGER")}
           >
             <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Manager</span>
-            <span className="text-[10px] text-muted-foreground mt-1 hidden sm:block">Create tasks</span>
+            <span className="text-[10px] text-muted-foreground mt-1 hidden sm:block">Manage items</span>
           </button>
 
           <button
             className="flex flex-col items-center justify-center py-3 px-2 rounded-lg border border-border bg-background hover:bg-secondary/80 hover:border-primary/30 transition-all shadow-sm group"
             onClick={() => handleDemoLogin("EMPLOYEE")}
           >
-            <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Member</span>
-            <span className="text-[10px] text-muted-foreground mt-1 hidden sm:block">Update own</span>
+            <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Employee</span>
+            <span className="text-[10px] text-muted-foreground mt-1 hidden sm:block">POS checkouts</span>
           </button>
         </div>
 
